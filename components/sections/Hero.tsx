@@ -2,10 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { ArrowRight, Download } from 'lucide-react';
-import { siteConfig, heroIntro, heroBadges } from '@/lib/data';
+import { usePortfolioContent } from '@/lib/usePortfolioContent';
 import HeroPortrait from './HeroPortrait';
 
 export default function Hero() {
+  const { data } = usePortfolioContent();
+  const { siteConfig, heroIntro, heroBadges } = data;
   return (
     <section className="relative w-full px-6 lg:px-8 py-8 overflow-hidden bg-surface scroll-mt-20" id="hero">
       {/* Ambient Glows */}
