@@ -9,7 +9,7 @@ const iconMap: Record<string, React.ElementType> = {
 
 export default function Skills() {
   return (
-    <section className="w-full px-6 lg:px-8 py-8 bg-surface" id="skills">
+    <section className="w-full px-6 lg:px-8 py-8 bg-surface scroll-mt-20" id="skills">
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
         <SectionHeading
           label="Technical & Functional Taxonomy"

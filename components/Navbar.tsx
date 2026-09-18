@@ -36,8 +36,20 @@ export default function Navbar() {
 
   const handleClick = (href: string) => {
     setMobileOpen(false);
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    // Allow mobile menu animation to collapse, then scroll to section with navbar offset
+    setTimeout(() => {
+      const el = document.querySelector(href);
+      if (el) {
+        const headerOffset = 80; // height of fixed navbar
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: Math.max(0, offsetPosition),
+          behavior: 'smooth',
+        });
+      }
+    }, 100);
   };
 
   return (

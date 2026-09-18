@@ -7,7 +7,7 @@ import HeroPortrait from './HeroPortrait';
 
 export default function Hero() {
   return (
-    <section className="relative w-full px-6 lg:px-8 py-8 overflow-hidden bg-surface" id="hero">
+    <section className="relative w-full px-6 lg:px-8 py-8 overflow-hidden bg-surface scroll-mt-20" id="hero">
       {/* Ambient Glows */}
       <div className="absolute -top-24 right-1/4 w-[38rem] h-[38rem] bg-primary-container/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-1/2 -left-32 w-96 h-96 bg-tertiary-container/10 rounded-full blur-[100px] pointer-events-none" />

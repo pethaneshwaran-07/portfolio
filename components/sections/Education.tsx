@@ -5,7 +5,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export default function Education() {
   return (
-    <section className="w-full px-6 lg:px-8 py-8 bg-surface-container-lowest" id="education">
+    <section className="w-full px-6 lg:px-8 py-8 bg-surface-container-lowest scroll-mt-20" id="education">
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
         <SectionHeading
           label="Academic Foundation & Certifications"

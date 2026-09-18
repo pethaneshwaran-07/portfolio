@@ -26,7 +26,7 @@ const colorClasses = {
 
 export default function SapExpertise() {
   return (
-    <section className="w-full px-6 lg:px-8 py-8 bg-surface" id="sap-expertise">
+    <section className="w-full px-6 lg:px-8 py-8 bg-surface scroll-mt-20" id="sap-expertise">
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
         {/* Header */}
         <ScrollReveal>

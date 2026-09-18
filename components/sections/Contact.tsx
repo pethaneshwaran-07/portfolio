@@ -35,7 +35,7 @@ export default function Contact() {
   };
 
   return (
-    <section className="w-full px-6 lg:px-8 py-8 bg-surface-container-lowest" id="contact">
+    <section className="w-full px-6 lg:px-8 py-8 bg-surface-container-lowest scroll-mt-20" id="contact">
       <div className="max-w-5xl mx-auto flex flex-col gap-8">
         <SectionHeading
           label="Immediate Availability"

@@ -13,7 +13,7 @@
     background-color: #0b1326;
     color: #dae2fd;
     font-family: var(--font-inter), Inter, system-ui, sans-serif;
-    overscroll-behavior: none;
+    overscroll-behavior-y: contain;
   }
 
   ::selection {
