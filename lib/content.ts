@@ -3,44 +3,65 @@ import {
   siteConfig as defaultSiteConfig,
   heroIntro as defaultHeroIntro,
   heroBadges as defaultHeroBadges,
-  aboutSection as defaultAboutSection,
+  aboutNarrative as defaultAboutNarrative,
   sapModules as defaultSapModules,
-  featuredProject as defaultFeaturedProject,
-  experienceItems as defaultExperienceItems,
-  educationItems as defaultEducationItems,
-  skillsCategories as defaultSkillsCategories,
+  experiences as defaultExperiences,
+  education as defaultEducation,
+  skillCategories as defaultSkillCategories,
   navLinks as defaultNavLinks,
 } from './data';
+
+export interface SkillCategoryItem {
+  icon?: string;
+  title: string;
+  color?: string;
+  footer?: string;
+  skills: string[];
+}
+
+export interface ExperienceItem {
+  title: string;
+  company: string;
+  location: string;
+  period: string;
+  color?: string;
+  tasks: { icon: string; text: string }[];
+}
+
+export interface EducationItem {
+  degree: string;
+  institution: string;
+  period: string;
+  color?: string;
+  focus: string;
+}
 
 export interface SiteData {
   siteConfig: typeof defaultSiteConfig;
   heroIntro: string;
   heroBadges: typeof defaultHeroBadges;
-  aboutSection: typeof defaultAboutSection;
+  aboutNarrative: typeof defaultAboutNarrative;
   sapModules: typeof defaultSapModules;
-  featuredProject: typeof defaultFeaturedProject;
-  experienceItems: typeof defaultExperienceItems;
-  educationItems: typeof defaultEducationItems;
-  skillsCategories: typeof defaultSkillsCategories;
+  experiences: ExperienceItem[];
+  education: EducationItem[];
+  skillCategories: SkillCategoryItem[];
 }
 
 export const defaultSiteData: SiteData = {
   siteConfig: defaultSiteConfig,
   heroIntro: defaultHeroIntro,
   heroBadges: defaultHeroBadges,
-  aboutSection: defaultAboutSection,
+  aboutNarrative: defaultAboutNarrative,
   sapModules: defaultSapModules,
-  featuredProject: defaultFeaturedProject,
-  experienceItems: defaultExperienceItems,
-  educationItems: defaultEducationItems,
-  skillsCategories: defaultSkillsCategories,
+  experiences: defaultExperiences as any,
+  education: defaultEducation as any,
+  skillCategories: defaultSkillCategories as any,
 };
 
 const STORAGE_KEY = 'harish_portfolio_live_content';
 
 export async function getLiveSiteData(): Promise<SiteData> {
   try {
-    // 1. Try Supabase site_content table
     const { data, error } = await supabase
       .from('site_content')
       .select('content')
@@ -57,7 +78,6 @@ export async function getLiveSiteData(): Promise<SiteData> {
     console.warn('Supabase content fetch warning, using fallback:', err);
   }
 
-  // 2. Fallback to browser localStorage if on client side
   if (typeof window !== 'undefined') {
     const cached = localStorage.getItem(STORAGE_KEY);
     if (cached) {
@@ -90,10 +110,8 @@ export async function saveLiveSiteData(newData: SiteData): Promise<{ success: bo
     console.warn('Supabase save failed:', err);
   }
 
-  // Always save to localStorage on client side as fallback
   if (typeof window !== 'undefined') {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newData));
-    // Trigger custom event so components re-render immediately
     window.dispatchEvent(new Event('portfolio-content-updated'));
   }
 

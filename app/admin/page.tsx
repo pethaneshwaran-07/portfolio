@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Lock, Save, RotateCcw, Trash2, Plus, ExternalLink, MessageSquare, Check, ShieldCheck, User, Briefcase, Award, Layers, FileText } from 'lucide-react';
-import { getLiveSiteData, saveLiveSiteData, defaultSiteData, SiteData } from '@/lib/content';
+import { Lock, Save, RotateCcw, Trash2, Plus, ExternalLink, MessageSquare, ShieldCheck, User, Briefcase, Award, Layers } from 'lucide-react';
+import { getLiveSiteData, saveLiveSiteData, defaultSiteData, SiteData, SkillCategoryItem, ExperienceItem } from '@/lib/content';
 import { supabase } from '@/lib/supabase';
 
 interface ContactMessage {
@@ -19,7 +19,7 @@ export default function AdminPage() {
   const [passcode, setPasscode] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [authError, setAuthError] = useState('');
-  const [activeTab, setActiveTab] = useState<'profile' | 'projects' | 'skills' | 'experience' | 'messages'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'about' | 'skills' | 'experience' | 'messages'>('profile');
   
   const [siteData, setSiteData] = useState<SiteData>(defaultSiteData);
   const [messages, setMessages] = useState<ContactMessage[]>([]);
@@ -27,7 +27,6 @@ export default function AdminPage() {
   const [saveStatus, setSaveStatus] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
   useEffect(() => {
-    // Check if already authenticated in this session
     const sessionAuth = sessionStorage.getItem('admin_authenticated');
     if (sessionAuth === 'true') {
       setAuthenticated(true);
@@ -208,7 +207,7 @@ export default function AdminPage() {
         <div className="w-full md:w-64 flex flex-col gap-2">
           {[
             { id: 'profile', label: 'Profile & Contact', icon: User },
-            { id: 'projects', label: 'Projects', icon: Briefcase },
+            { id: 'about', label: 'About & Bio', icon: Briefcase },
             { id: 'skills', label: 'Skills Matrix', icon: Layers },
             { id: 'experience', label: 'Experience & Education', icon: Award },
             { id: 'messages', label: `Messages (${messages.length})`, icon: MessageSquare },
@@ -237,7 +236,7 @@ export default function AdminPage() {
           {activeTab === 'profile' && (
             <div className="flex flex-col gap-6">
               <h2 className="text-title-lg font-bold text-on-surface border-b border-outline-variant/30 pb-3">
-                Profile Information
+                Profile & Contact Information
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -321,7 +320,7 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <label className="text-label-md text-on-surface-variant mb-1 block">Portrait Photo URL</label>
+                  <label className="text-label-md text-on-surface-variant mb-1 block">Portrait Image URL</label>
                   <input
                     type="text"
                     value={siteData.siteConfig.portraitUrl}
@@ -335,9 +334,18 @@ export default function AdminPage() {
                   />
                 </div>
               </div>
+            </div>
+          )}
 
-              <div className="mt-4">
-                <label className="text-label-md text-on-surface-variant mb-1 block">Hero Introduction Text</label>
+          {/* TAB 2: ABOUT & BIO */}
+          {activeTab === 'about' && (
+            <div className="flex flex-col gap-6">
+              <h2 className="text-title-lg font-bold text-on-surface border-b border-outline-variant/30 pb-3">
+                Hero & About Narrative
+              </h2>
+
+              <div>
+                <label className="text-label-md text-on-surface-variant mb-1 block">Hero Introduction Summary</label>
                 <textarea
                   rows={3}
                   value={siteData.heroIntro}
@@ -345,105 +353,35 @@ export default function AdminPage() {
                   className="w-full px-4 py-2.5 bg-surface-container border border-outline-variant/40 rounded-xl text-on-surface text-body-md"
                 />
               </div>
-            </div>
-          )}
 
-          {/* TAB 2: PROJECTS */}
-          {activeTab === 'projects' && (
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center justify-between border-b border-outline-variant/30 pb-3">
-                <h2 className="text-title-lg font-bold text-on-surface">Projects Management</h2>
-                <button
-                  onClick={() => {
-                    const newProj = {
-                      id: `proj_${Date.now()}`,
-                      title: 'New SAP FI Project',
-                      category: 'SAP FI / Financial Accounting',
-                      period: '2026',
-                      scope: 'Custom SAP Implementation & Configuration',
-                      summary: 'Enter project summary description here.',
-                      achievements: ['Configured GL, AP, AR modules', 'Executed end-to-end testing'],
-                      tags: ['SAP FI', 'GL', 'AP', 'AR'],
-                      featured: true,
-                    };
+              <div>
+                <label className="text-label-md text-on-surface-variant mb-1 block">About Me Main Paragraph</label>
+                <textarea
+                  rows={3}
+                  value={siteData.aboutNarrative.main}
+                  onChange={(e) =>
                     setSiteData({
                       ...siteData,
-                      featuredProject: newProj,
-                    });
-                  }}
-                  className="px-3 py-1.5 bg-primary-container text-on-primary-container text-label-md rounded-lg flex items-center gap-1 font-semibold"
-                >
-                  <Plus size={16} /> Edit Featured Project
-                </button>
+                      aboutNarrative: { ...siteData.aboutNarrative, main: e.target.value },
+                    })
+                  }
+                  className="w-full px-4 py-2.5 bg-surface-container border border-outline-variant/40 rounded-xl text-on-surface text-body-md"
+                />
               </div>
 
-              <div className="p-4 bg-surface-container rounded-xl border border-outline-variant/30 flex flex-col gap-4">
-                <h3 className="text-title-md font-bold text-primary">Featured Project Details</h3>
-
-                <div>
-                  <label className="text-label-sm text-on-surface-variant block mb-1">Project Title</label>
-                  <input
-                    type="text"
-                    value={siteData.featuredProject.title}
-                    onChange={(e) =>
-                      setSiteData({
-                        ...siteData,
-                        featuredProject: { ...siteData.featuredProject, title: e.target.value },
-                      })
-                    }
-                    className="w-full px-4 py-2 bg-surface-container-high border border-outline-variant/40 rounded-lg text-on-surface"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-label-sm text-on-surface-variant block mb-1">Scope</label>
-                  <input
-                    type="text"
-                    value={siteData.featuredProject.scope}
-                    onChange={(e) =>
-                      setSiteData({
-                        ...siteData,
-                        featuredProject: { ...siteData.featuredProject, scope: e.target.value },
-                      })
-                    }
-                    className="w-full px-4 py-2 bg-surface-container-high border border-outline-variant/40 rounded-lg text-on-surface"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-label-sm text-on-surface-variant block mb-1">Summary</label>
-                  <textarea
-                    rows={3}
-                    value={siteData.featuredProject.summary}
-                    onChange={(e) =>
-                      setSiteData({
-                        ...siteData,
-                        featuredProject: { ...siteData.featuredProject, summary: e.target.value },
-                      })
-                    }
-                    className="w-full px-4 py-2 bg-surface-container-high border border-outline-variant/40 rounded-lg text-on-surface"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-label-sm text-on-surface-variant block mb-1">
-                    Key Achievements (comma separated)
-                  </label>
-                  <input
-                    type="text"
-                    value={siteData.featuredProject.achievements.join(', ')}
-                    onChange={(e) =>
-                      setSiteData({
-                        ...siteData,
-                        featuredProject: {
-                          ...siteData.featuredProject,
-                          achievements: e.target.value.split(',').map((s) => s.trim()),
-                        },
-                      })
-                    }
-                    className="w-full px-4 py-2 bg-surface-container-high border border-outline-variant/40 rounded-lg text-on-surface"
-                  />
-                </div>
+              <div>
+                <label className="text-label-md text-on-surface-variant mb-1 block">About Me Detailed Paragraph</label>
+                <textarea
+                  rows={4}
+                  value={siteData.aboutNarrative.secondary}
+                  onChange={(e) =>
+                    setSiteData({
+                      ...siteData,
+                      aboutNarrative: { ...siteData.aboutNarrative, secondary: e.target.value },
+                    })
+                  }
+                  className="w-full px-4 py-2.5 bg-surface-container border border-outline-variant/40 rounded-xl text-on-surface text-body-md"
+                />
               </div>
             </div>
           )}
@@ -455,7 +393,7 @@ export default function AdminPage() {
                 Skills Taxonomy Matrix
               </h2>
 
-              {siteData.skillsCategories.map((cat, catIdx) => (
+              {siteData.skillCategories.map((cat: SkillCategoryItem, catIdx: number) => (
                 <div key={cat.title} className="p-4 bg-surface-container rounded-xl border border-outline-variant/30 flex flex-col gap-3">
                   <h3 className="text-title-md font-bold text-primary">{cat.title}</h3>
                   <div>
@@ -466,9 +404,9 @@ export default function AdminPage() {
                       type="text"
                       value={cat.skills.join(', ')}
                       onChange={(e) => {
-                        const updatedCats = [...siteData.skillsCategories];
+                        const updatedCats = [...siteData.skillCategories];
                         updatedCats[catIdx].skills = e.target.value.split(',').map((s) => s.trim());
-                        setSiteData({ ...siteData, skillsCategories: updatedCats });
+                        setSiteData({ ...siteData, skillCategories: updatedCats });
                       }}
                       className="w-full px-4 py-2 bg-surface-container-high border border-outline-variant/40 rounded-lg text-on-surface"
                     />
@@ -482,23 +420,23 @@ export default function AdminPage() {
           {activeTab === 'experience' && (
             <div className="flex flex-col gap-6">
               <h2 className="text-title-lg font-bold text-on-surface border-b border-outline-variant/30 pb-3">
-                Experience & Academic Background
+                Experience & Academic History
               </h2>
 
               <div className="flex flex-col gap-4">
                 <h3 className="text-title-md font-bold text-primary">Work Experience</h3>
-                {siteData.experienceItems.map((exp, idx) => (
+                {siteData.experiences.map((exp: ExperienceItem, idx: number) => (
                   <div key={idx} className="p-4 bg-surface-container rounded-xl border border-outline-variant/30 flex flex-col gap-3">
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="text-label-sm text-on-surface-variant block">Role</label>
                         <input
                           type="text"
-                          value={exp.role}
+                          value={exp.title}
                           onChange={(e) => {
-                            const updated = [...siteData.experienceItems];
-                            updated[idx].role = e.target.value;
-                            setSiteData({ ...siteData, experienceItems: updated });
+                            const updated = [...siteData.experiences];
+                            updated[idx].title = e.target.value;
+                            setSiteData({ ...siteData, experiences: updated });
                           }}
                           className="w-full px-3 py-1.5 bg-surface-container-high border border-outline-variant/40 rounded-lg"
                         />
@@ -509,9 +447,9 @@ export default function AdminPage() {
                           type="text"
                           value={exp.company}
                           onChange={(e) => {
-                            const updated = [...siteData.experienceItems];
+                            const updated = [...siteData.experiences];
                             updated[idx].company = e.target.value;
-                            setSiteData({ ...siteData, experienceItems: updated });
+                            setSiteData({ ...siteData, experiences: updated });
                           }}
                           className="w-full px-3 py-1.5 bg-surface-container-high border border-outline-variant/40 rounded-lg"
                         />
